@@ -11,8 +11,8 @@ services:
       - ./token.json:/app/token.json
       # Mount .env file
       - ./.env:/app/.env:ro
-    environment:
-      - TZ=Europe/Berlin
+    env_file:
+      - .env
     logging:
       driver: "json-file"
       options:
