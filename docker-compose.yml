@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  gmail-puller:
+    build: .
+    container_name: gmail-puller
+    restart: unless-stopped
+    volumes:
+      # Mount credentials and token files
+      - ./credentials.json:/app/credentials.json:ro
+      - ./token.json:/app/token.json
+      # Mount .env file
+      - ./.env:/app/.env:ro
+    environment:
+      - TZ=Europe/Berlin
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
