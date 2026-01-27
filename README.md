@@ -1,73 +1,60 @@
 # Gmail Puller
 
-Automatisches Abrufen von Gmail E-Mails jede Minute mit Docker.
+Automatisches Klicken auf "Jetzt E-Mails abrufen" in Gmail jede Minute mit Docker.
 
-Automatically check Gmail for new emails every minute using Docker.
+Automatically click "Fetch emails now" button in Gmail every minute using Docker.
 
 ## 🇩🇪 Deutsch
 
 ### Beschreibung
 
-Dieses Projekt prüft automatisch jede Minute (konfigurierbar) auf neue E-Mails in Ihrem Gmail-Konto. Es läuft in einem Docker-Container und zeigt neue ungelesene E-Mails in den Logs an.
+Dieses Projekt automatisiert das Klicken auf den Button "Jetzt E-Mails abrufen" in den Gmail-Einstellungen. Dies ist nützlich, wenn Sie externe E-Mail-Konten (POP3/IMAP) mit Gmail verbunden haben und Google die E-Mails schneller abrufen soll, als es normalerweise der Fall ist.
+
+**Problem:** Google hat eine hohe Verzögerung beim Abrufen von E-Mails aus externen Konten (oft über 20 Minuten). Dies führt zu Problemen mit Verifizierungs-E-Mails, die bereits abgelaufen ankommen.
+
+**Lösung:** Dieses Skript klickt automatisch jede Minute auf den "Jetzt E-Mails abrufen" Button, um Google zu zwingen, die E-Mails sofort abzurufen.
 
 ### Voraussetzungen
 
 - Docker und Docker Compose installiert
-- Ein Google Cloud Projekt mit aktivierter Gmail API
-- OAuth 2.0 Credentials von Google
+- Ein Gmail-Konto mit verbundenen externen E-Mail-Konten
+- App-Passwort für Gmail (empfohlen aus Sicherheitsgründen)
 
 ### Einrichtung
 
-#### 1. Google Cloud Projekt erstellen
+#### 1. App-Passwort erstellen (empfohlen)
 
-1. Gehen Sie zu [Google Cloud Console](https://console.cloud.google.com/)
-2. Erstellen Sie ein neues Projekt oder wählen Sie ein bestehendes aus
-3. Aktivieren Sie die Gmail API:
-   - Navigieren Sie zu "APIs & Services" → "Library"
-   - Suchen Sie nach "Gmail API" und aktivieren Sie sie
+Aus Sicherheitsgründen sollten Sie ein App-Passwort verwenden:
 
-#### 2. OAuth 2.0 Credentials erstellen
+1. Gehen Sie zu [Google App Passwords](https://myaccount.google.com/apppasswords)
+2. Wählen Sie "Mail" als App
+3. Wählen Sie Ihr Gerät
+4. Kopieren Sie das generierte 16-stellige Passwort
 
-1. Gehen Sie zu "APIs & Services" → "Credentials"
-2. Klicken Sie auf "Create Credentials" → "OAuth client ID"
-3. Wählen Sie "Desktop app" als Application type
-4. Geben Sie einen Namen ein (z.B. "Gmail Puller")
-5. Klicken Sie auf "Create"
-6. Laden Sie die Credentials-Datei herunter
-7. Benennen Sie die Datei in `credentials.json` um und legen Sie sie im Projektverzeichnis ab
-
-#### 3. Konfiguration
+#### 2. Konfiguration
 
 1. Kopieren Sie die `.env.example` zu `.env`:
    ```bash
    cp .env.example .env
    ```
 
-2. Passen Sie die `.env` Datei an (optional):
+2. Bearbeiten Sie die `.env` Datei und tragen Sie Ihre Daten ein:
    ```env
+   GMAIL_EMAIL=ihre.email@gmail.com
+   GMAIL_PASSWORD=ihr_app_passwort_hier
    CHECK_INTERVAL=60          # Prüfintervall in Sekunden (60 = 1 Minute)
-   GMAIL_LABELS=INBOX         # Welche Labels geprüft werden sollen
-   MAX_MESSAGES=10            # Maximale Anzahl der Nachrichten pro Prüfung
-   LOG_LEVEL=INFO            # Log-Level (DEBUG, INFO, WARNING, ERROR)
+   GMAIL_ACCOUNT_INDEX=0      # Gmail Account Index (Standard: 0)
+   LOG_LEVEL=INFO            # Log-Level
+   TZ=Europe/Berlin          # Zeitzone
+   HEADLESS=true             # Browser im Hintergrund (true/false)
    ```
 
-3. Stellen Sie sicher, dass `credentials.json` im Projektverzeichnis liegt
-
-#### 4. Erste Authentifizierung
-
-Beim ersten Start müssen Sie sich mit Ihrem Google-Konto authentifizieren:
+#### 3. Mit Docker starten
 
 ```bash
-# Ohne Docker (für erste Authentifizierung)
-pip install -r requirements.txt
-python gmail_puller.py
-```
+# Setup-Skript ausführen (prüft Konfiguration)
+./setup.sh
 
-Es öffnet sich ein Browser-Fenster. Melden Sie sich an und gewähren Sie die Berechtigungen. Die Datei `token.json` wird automatisch erstellt und für zukünftige Authentifizierungen verwendet.
-
-#### 5. Mit Docker starten
-
-```bash
 # Container bauen und starten
 docker-compose up -d
 
@@ -80,7 +67,7 @@ docker-compose down
 
 ### Verwendung
 
-Nach dem Start prüft der Container automatisch jede Minute auf neue E-Mails und zeigt diese in den Logs an:
+Nach dem Start meldet sich der Container automatisch bei Gmail an und klickt jede Minute auf den "Jetzt E-Mails abrufen" Button:
 
 ```bash
 docker-compose logs -f gmail-puller
@@ -88,22 +75,33 @@ docker-compose logs -f gmail-puller
 
 Sie sehen Ausgaben wie:
 ```
-gmail-puller  | 2024-01-27 12:00:00 - INFO - Found 2 unread message(s)
-gmail-puller  | 2024-01-27 12:00:00 - INFO -   - From: sender@example.com
-gmail-puller  | 2024-01-27 12:00:00 - INFO -     Subject: Test Email
-gmail-puller  | 2024-01-27 12:00:00 - INFO -     Date: Mon, 27 Jan 2024 12:00:00 +0000
+gmail-puller  | 2024-01-27 12:00:00 - INFO - Successfully logged into Gmail
+gmail-puller  | 2024-01-27 12:00:05 - INFO - ✓ Successfully clicked 'Jetzt E-Mails abrufen' button!
+gmail-puller  | 2024-01-27 12:00:05 - INFO - ✓ Email fetch triggered successfully
 ```
 
 ### Fehlerbehebung
 
-**Problem:** "credentials.json not found"
-- Lösung: Stellen Sie sicher, dass die `credentials.json` Datei im Projektverzeichnis liegt
+**Problem:** "GMAIL_EMAIL and GMAIL_PASSWORD must be set"
+- Lösung: Bearbeiten Sie die `.env` Datei und tragen Sie Ihre Gmail-Zugangsdaten ein
 
-**Problem:** "Access denied" oder OAuth-Fehler
-- Lösung: Löschen Sie `token.json` und authentifizieren Sie sich erneut
+**Problem:** "Could not find 'Fetch emails now' button"
+- Lösung: Stellen Sie sicher, dass Sie externe E-Mail-Konten in Ihren Gmail-Einstellungen konfiguriert haben
+- Der Button erscheint nur, wenn externe Konten verbunden sind
+
+**Problem:** Login-Fehler
+- Lösung: Verwenden Sie ein App-Passwort statt Ihres regulären Passworts
+- Stellen Sie sicher, dass 2FA aktiviert ist, um App-Passwörter zu generieren
 
 **Problem:** Container startet nicht
 - Lösung: Prüfen Sie die Logs mit `docker-compose logs`
+
+### Wichtige Hinweise
+
+- Das Skript benötigt externe E-Mail-Konten, die in Gmail konfiguriert sind
+- Der Button "Jetzt E-Mails abrufen" wird nur angezeigt, wenn externe Konten verbunden sind
+- Aus Sicherheitsgründen wird die Verwendung eines App-Passworts empfohlen
+- Die Login-Session wird persistent gespeichert, sodass nur einmal eine Anmeldung erforderlich ist
 
 ---
 
@@ -111,66 +109,53 @@ gmail-puller  | 2024-01-27 12:00:00 - INFO -     Date: Mon, 27 Jan 2024 12:00:00
 
 ### Description
 
-This project automatically checks for new emails in your Gmail account every minute (configurable). It runs in a Docker container and displays new unread emails in the logs.
+This project automates clicking the "Fetch emails now" button in Gmail settings. This is useful when you have external email accounts (POP3/IMAP) connected to Gmail and want Google to fetch emails faster than it normally does.
+
+**Problem:** Google has a high delay when fetching emails from external accounts (often over 20 minutes). This causes issues with verification emails that expire before they arrive.
+
+**Solution:** This script automatically clicks the "Fetch emails now" button every minute to force Google to fetch emails immediately.
 
 ### Prerequisites
 
 - Docker and Docker Compose installed
-- A Google Cloud project with Gmail API enabled
-- OAuth 2.0 credentials from Google
+- A Gmail account with connected external email accounts
+- App Password for Gmail (recommended for security)
 
 ### Setup
 
-#### 1. Create Google Cloud Project
+#### 1. Create App Password (recommended)
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select an existing one
-3. Enable the Gmail API:
-   - Navigate to "APIs & Services" → "Library"
-   - Search for "Gmail API" and enable it
+For security reasons, you should use an App Password:
 
-#### 2. Create OAuth 2.0 Credentials
+1. Go to [Google App Passwords](https://myaccount.google.com/apppasswords)
+2. Select "Mail" as the app
+3. Select your device
+4. Copy the generated 16-character password
 
-1. Go to "APIs & Services" → "Credentials"
-2. Click "Create Credentials" → "OAuth client ID"
-3. Select "Desktop app" as application type
-4. Enter a name (e.g., "Gmail Puller")
-5. Click "Create"
-6. Download the credentials file
-7. Rename the file to `credentials.json` and place it in the project directory
-
-#### 3. Configuration
+#### 2. Configuration
 
 1. Copy `.env.example` to `.env`:
    ```bash
    cp .env.example .env
    ```
 
-2. Adjust the `.env` file (optional):
+2. Edit the `.env` file and enter your credentials:
    ```env
+   GMAIL_EMAIL=your.email@gmail.com
+   GMAIL_PASSWORD=your_app_password_here
    CHECK_INTERVAL=60          # Check interval in seconds (60 = 1 minute)
-   GMAIL_LABELS=INBOX         # Which labels to check
-   MAX_MESSAGES=10            # Maximum number of messages per check
-   LOG_LEVEL=INFO            # Log level (DEBUG, INFO, WARNING, ERROR)
+   GMAIL_ACCOUNT_INDEX=0      # Gmail account index (default: 0)
+   LOG_LEVEL=INFO            # Log level
+   TZ=Europe/Berlin          # Timezone
+   HEADLESS=true             # Run browser in background (true/false)
    ```
 
-3. Ensure `credentials.json` is in the project directory
-
-#### 4. Initial Authentication
-
-On first run, you need to authenticate with your Google account:
+#### 3. Start with Docker
 
 ```bash
-# Without Docker (for initial authentication)
-pip install -r requirements.txt
-python gmail_puller.py
-```
+# Run setup script (checks configuration)
+./setup.sh
 
-A browser window will open. Sign in and grant the permissions. The `token.json` file will be created automatically and used for future authentications.
-
-#### 5. Start with Docker
-
-```bash
 # Build and start container
 docker-compose up -d
 
@@ -183,7 +168,7 @@ docker-compose down
 
 ### Usage
 
-After starting, the container automatically checks for new emails every minute and displays them in the logs:
+After starting, the container automatically logs into Gmail and clicks the "Fetch emails now" button every minute:
 
 ```bash
 docker-compose logs -f gmail-puller
@@ -191,40 +176,51 @@ docker-compose logs -f gmail-puller
 
 You'll see output like:
 ```
-gmail-puller  | 2024-01-27 12:00:00 - INFO - Found 2 unread message(s)
-gmail-puller  | 2024-01-27 12:00:00 - INFO -   - From: sender@example.com
-gmail-puller  | 2024-01-27 12:00:00 - INFO -     Subject: Test Email
-gmail-puller  | 2024-01-27 12:00:00 - INFO -     Date: Mon, 27 Jan 2024 12:00:00 +0000
+gmail-puller  | 2024-01-27 12:00:00 - INFO - Successfully logged into Gmail
+gmail-puller  | 2024-01-27 12:00:05 - INFO - ✓ Successfully clicked 'Fetch mail now' button!
+gmail-puller  | 2024-01-27 12:00:05 - INFO - ✓ Email fetch triggered successfully
 ```
 
 ### Troubleshooting
 
-**Problem:** "credentials.json not found"
-- Solution: Ensure the `credentials.json` file is in the project directory
+**Problem:** "GMAIL_EMAIL and GMAIL_PASSWORD must be set"
+- Solution: Edit the `.env` file and enter your Gmail credentials
 
-**Problem:** "Access denied" or OAuth errors
-- Solution: Delete `token.json` and re-authenticate
+**Problem:** "Could not find 'Fetch emails now' button"
+- Solution: Make sure you have external email accounts configured in your Gmail settings
+- The button only appears when external accounts are connected
+
+**Problem:** Login errors
+- Solution: Use an App Password instead of your regular password
+- Make sure 2FA is enabled to generate App Passwords
 
 **Problem:** Container won't start
 - Solution: Check the logs with `docker-compose logs`
+
+### Important Notes
+
+- The script requires external email accounts configured in Gmail
+- The "Fetch emails now" button only appears when external accounts are connected
+- Using an App Password is recommended for security
+- Login session is stored persistently, so you only need to log in once
 
 ---
 
 ## 📋 Features
 
-- ✅ Automatic email checking every minute (configurable)
+- ✅ Automatic button clicking every minute (configurable)
 - ✅ Docker containerized for easy deployment
-- ✅ OAuth 2.0 authentication with Gmail API
+- ✅ Selenium-based browser automation
 - ✅ Configurable via .env file
-- ✅ Detailed logging of new emails
-- ✅ Persistent authentication (token.json)
-- ✅ Automatic token refresh
+- ✅ Persistent login session
+- ✅ Headless browser mode
+- ✅ Multi-language support (German & English)
 
 ## 🔒 Security
 
-- OAuth 2.0 authentication (no password storage)
-- Read-only access to Gmail
-- Credentials stored locally, never shared
+- Uses App Password (no regular password storage)
+- Browser profile stored in Docker volume
+- Credentials only in .env file
 - `.gitignore` configured to exclude sensitive files
 
 ## 📝 License

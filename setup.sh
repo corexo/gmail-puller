@@ -25,73 +25,48 @@ fi
 echo "✅ Docker and docker-compose are installed"
 echo ""
 
-# Check if credentials.json exists
-if [ ! -f "credentials.json" ]; then
-    echo "❌ credentials.json not found!"
-    echo ""
-    echo "Please follow these steps:"
-    echo "1. Go to https://console.cloud.google.com/"
-    echo "2. Create a new project or select an existing one"
-    echo "3. Enable the Gmail API"
-    echo "4. Create OAuth 2.0 credentials (Desktop app)"
-    echo "5. Download the credentials file"
-    echo "6. Rename it to 'credentials.json' and place it here"
-    echo ""
-    exit 1
-fi
-
-echo "✅ credentials.json found"
-echo ""
-
 # Check if .env exists, if not create from .env.example
 if [ ! -f ".env" ]; then
     echo "Creating .env from .env.example..."
     cp .env.example .env
-    echo "✅ .env created. You can edit it to customize settings."
+    echo "✅ .env created"
+    echo ""
+    echo "⚠️  IMPORTANT: You must edit .env and configure your Gmail credentials!"
+    echo ""
+    echo "Please set:"
+    echo "  - GMAIL_EMAIL=your.email@gmail.com"
+    echo "  - GMAIL_PASSWORD=your_app_password"
+    echo ""
+    echo "For security, use an App Password instead of your regular password:"
+    echo "  1. Go to https://myaccount.google.com/apppasswords"
+    echo "  2. Create a new App Password for 'Mail'"
+    echo "  3. Copy the 16-character password"
+    echo "  4. Use that in your .env file"
+    echo ""
+    read -p "Press Enter after you have configured .env..."
 else
     echo "✅ .env already exists"
 fi
 echo ""
 
-# Check if we need initial authentication
-if [ ! -f "token.json" ]; then
-    echo "⚠️  First-time authentication required"
-    echo ""
-    echo "To authenticate, you have two options:"
-    echo ""
-    echo "Option 1: Run locally first (recommended)"
-    echo "  pip install -r requirements.txt"
-    echo "  python gmail_puller.py"
-    echo "  (Press Ctrl+C after authentication completes)"
-    echo ""
-    echo "Option 2: Authenticate via Docker (advanced)"
-    echo "  This requires port forwarding and may be complex"
-    echo ""
-    read -p "Would you like to run local authentication now? (y/n) " -n 1 -r
-    echo ""
-    
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo ""
-        echo "Installing Python dependencies..."
-        pip install -r requirements.txt
-        
-        echo ""
-        echo "Starting authentication process..."
-        echo "A browser window will open. Please sign in and grant permissions."
-        echo "Press Ctrl+C after you see 'Successfully authenticated with Gmail API'"
-        echo ""
-        
-        python gmail_puller.py
-    else
-        echo ""
-        echo "Skipping local authentication."
-        echo "You'll need to authenticate manually before using Docker."
-    fi
-else
-    echo "✅ token.json found - authentication already completed"
+# Verify credentials are set
+source .env 2>/dev/null || true
+
+if [ -z "$GMAIL_EMAIL" ] || [ "$GMAIL_EMAIL" = "your.email@gmail.com" ]; then
+    echo "⚠️  WARNING: GMAIL_EMAIL is not configured in .env"
+    echo "Please edit .env and set your Gmail email address"
+    exit 1
 fi
 
+if [ -z "$GMAIL_PASSWORD" ] || [ "$GMAIL_PASSWORD" = "your_password_here" ]; then
+    echo "⚠️  WARNING: GMAIL_PASSWORD is not configured in .env"
+    echo "Please edit .env and set your Gmail password or App Password"
+    exit 1
+fi
+
+echo "✅ Gmail credentials are configured"
 echo ""
+
 echo "=================================================="
 echo "   Setup Complete!"
 echo "=================================================="
@@ -104,4 +79,7 @@ echo "  docker-compose logs -f"
 echo ""
 echo "To stop the Gmail Puller:"
 echo "  docker-compose down"
+echo ""
+echo "Note: The first run will download Chrome and may take a few minutes."
+echo "The script will log into Gmail and click 'Fetch emails now' every minute."
 echo ""

@@ -4,7 +4,7 @@
 
 ### Voraussetzungen
 - Docker & Docker Compose installiert
-- Google-Konto
+- Gmail-Konto mit externen E-Mail-Konten (POP3/IMAP)
 
 ### In 5 Schritten zum Ziel:
 
@@ -14,27 +14,22 @@
    cd gmail-puller
    ```
 
-2. **Google Credentials erstellen**
-   - Gehe zu: https://console.cloud.google.com/
-   - Erstelle ein Projekt und aktiviere Gmail API
-   - Erstelle OAuth 2.0 Credentials (Desktop App)
-   - Lade `credentials.json` herunter und lege sie im Projektverzeichnis ab
+2. **App-Passwort erstellen**
+   - Gehe zu: https://myaccount.google.com/apppasswords
+   - Erstelle ein App-Passwort für "Mail"
+   - Kopiere das 16-stellige Passwort
 
 3. **Konfiguration**
    ```bash
    cp .env.example .env
-   # Optional: .env bearbeiten, um Einstellungen anzupassen
+   # Bearbeite .env und trage deine Daten ein:
+   # GMAIL_EMAIL=deine.email@gmail.com
+   # GMAIL_PASSWORD=dein_app_passwort
    ```
 
-4. **Erste Authentifizierung**
+4. **Setup-Skript ausführen**
    ```bash
-   # Setup-Skript ausführen (hilft bei der ersten Einrichtung)
    ./setup.sh
-   
-   # ODER manuell:
-   pip install -r requirements.txt
-   python gmail_puller.py
-   # Nach erfolgreicher Authentifizierung: Ctrl+C drücken
    ```
 
 5. **Mit Docker starten**
@@ -43,7 +38,7 @@
    docker-compose logs -f
    ```
 
-**Fertig!** 🎉 Der Gmail Puller läuft jetzt und prüft jede Minute auf neue E-Mails.
+**Fertig!** 🎉 Der Gmail Puller klickt jetzt jede Minute auf "Jetzt E-Mails abrufen".
 
 ---
 
@@ -51,7 +46,7 @@
 
 ### Prerequisites
 - Docker & Docker Compose installed
-- Google Account
+- Gmail account with external email accounts (POP3/IMAP)
 
 ### 5 Steps to Success:
 
@@ -61,27 +56,22 @@
    cd gmail-puller
    ```
 
-2. **Create Google Credentials**
-   - Go to: https://console.cloud.google.com/
-   - Create a project and enable Gmail API
-   - Create OAuth 2.0 Credentials (Desktop App)
-   - Download `credentials.json` and place it in the project directory
+2. **Create App Password**
+   - Go to: https://myaccount.google.com/apppasswords
+   - Create an App Password for "Mail"
+   - Copy the 16-character password
 
 3. **Configuration**
    ```bash
    cp .env.example .env
-   # Optional: Edit .env to customize settings
+   # Edit .env and enter your credentials:
+   # GMAIL_EMAIL=your.email@gmail.com
+   # GMAIL_PASSWORD=your_app_password
    ```
 
-4. **Initial Authentication**
+4. **Run setup script**
    ```bash
-   # Run setup script (helps with first-time setup)
    ./setup.sh
-   
-   # OR manually:
-   pip install -r requirements.txt
-   python gmail_puller.py
-   # After successful authentication: Press Ctrl+C
    ```
 
 5. **Start with Docker**
@@ -90,7 +80,7 @@
    docker-compose logs -f
    ```
 
-**Done!** 🎉 Gmail Puller is now running and checking for new emails every minute.
+**Done!** 🎉 Gmail Puller is now clicking "Fetch mail now" every minute.
 
 ---
 
@@ -115,24 +105,27 @@ docker-compose up -d --build
 Edit `.env` to customize:
 
 ```env
-CHECK_INTERVAL=60      # Check interval in seconds (default: 60)
-GMAIL_LABELS=INBOX     # Labels to monitor (comma-separated)
-MAX_MESSAGES=10        # Max messages to fetch per check
-LOG_LEVEL=INFO        # Logging level (DEBUG, INFO, WARNING, ERROR)
-TZ=Europe/Berlin      # Timezone for logs
+GMAIL_EMAIL=your.email@gmail.com     # Your Gmail address
+GMAIL_PASSWORD=your_app_password     # Your App Password
+CHECK_INTERVAL=60                    # Check interval in seconds
+GMAIL_ACCOUNT_INDEX=0               # Account index (if multiple)
+LOG_LEVEL=INFO                      # Logging level
+TZ=Europe/Berlin                    # Timezone
+HEADLESS=true                       # Browser in background
 ```
 
 ## 🔍 Troubleshooting
 
-### "credentials.json not found"
-→ Download credentials from Google Cloud Console
+### "GMAIL_EMAIL and GMAIL_PASSWORD must be set"
+→ Edit `.env` file and enter your credentials
 
-### "Access denied" or OAuth errors
-→ Delete `token.json` and re-authenticate:
-```bash
-rm token.json
-python gmail_puller.py
-```
+### "Could not find 'Fetch emails now' button"
+→ Make sure you have external email accounts configured in Gmail settings
+→ Go to: https://mail.google.com/mail/u/0/#settings/accounts
+
+### Login errors
+→ Use App Password instead of regular password
+→ Enable 2FA first: https://myaccount.google.com/security
 
 ### Container won't start
 → Check logs:
@@ -141,5 +134,11 @@ docker-compose logs
 ```
 
 ---
+
+## 💡 What This Does
+
+This script automates clicking the **"Fetch emails now"** button in Gmail settings to force Google to pull emails from external accounts (POP3/IMAP) immediately, instead of waiting 20+ minutes.
+
+**Important:** This only works if you have external email accounts configured in Gmail!
 
 For detailed instructions, see [README.md](README.md)

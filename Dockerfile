@@ -3,6 +3,18 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
+# Install Chrome and dependencies
+RUN apt-get update && apt-get install -y \
+    wget \
+    gnupg \
+    unzip \
+    curl \
+    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
@@ -10,11 +22,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application files
 COPY gmail_puller.py .
 
-# Create volume mount point for credentials
-VOLUME ["/app/config"]
+# Create directory for Chrome profile
+RUN mkdir -p /tmp/chrome-profile
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
+ENV DISPLAY=:99
 
 # Run the application
 CMD ["python", "gmail_puller.py"]

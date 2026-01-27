@@ -6,15 +6,19 @@ services:
     container_name: gmail-puller
     restart: unless-stopped
     volumes:
-      # Mount credentials and token files
-      - ./credentials.json:/app/credentials.json:ro
-      - ./token.json:/app/token.json
       # Mount .env file
       - ./.env:/app/.env:ro
+      # Persist Chrome profile for session
+      - chrome-data:/tmp/chrome-profile
     env_file:
       - .env
+    # Required for Chrome in Docker
+    shm_size: 2gb
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
+
+volumes:
+  chrome-data:
