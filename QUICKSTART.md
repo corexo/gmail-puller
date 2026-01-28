@@ -31,7 +31,7 @@
    cp .env.example .env
    # Bearbeite .env und trage deine Daten ein:
    # GMAIL_EMAIL=deine.email@gmail.com
-   # GMAIL_PASSWORD=dein_passwort  # Normales Passwort oder App-Passwort (je nach 2FA)
+   # GMAIL_PASSWORD=dein_passwort  # Normales Passwort oder App-Passwort (abhängig von 2FA)
    ```
 
 4. **Setup-Skript ausführen**
@@ -80,7 +80,7 @@
    cp .env.example .env
    # Edit .env and enter your credentials:
    # GMAIL_EMAIL=your.email@gmail.com
-   # GMAIL_PASSWORD=your_password  # Regular password or App Password (depending on 2FA)
+   # GMAIL_PASSWORD=your_password  # regular password or App Password (depending on 2FA)
    ```
 
 4. **Run setup script**
@@ -120,7 +120,7 @@ Edit `.env` to customize:
 
 ```env
 GMAIL_EMAIL=your.email@gmail.com     # Your Gmail address
-GMAIL_PASSWORD=your_password         # Regular password or App Password (depending on 2FA)
+GMAIL_PASSWORD=your_password         # regular password or App Password (depending on 2FA)
 CHECK_INTERVAL=60                    # Check interval in seconds
 GMAIL_ACCOUNT_INDEX=0               # Account index (if multiple)
 LOG_LEVEL=INFO                      # Logging level

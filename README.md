@@ -30,7 +30,7 @@ Dieses Projekt automatisiert das Klicken auf den Button "Jetzt E-Mails abrufen" 
 **Wann Sie ein App-Passwort benötigen:**
 - Wenn Sie 2-Faktor-Authentifizierung (2FA) aktiviert haben (gilt für alle Gmail-Konten)
 - Erstellen Sie ein App-Passwort:
-  1. Aktivieren Sie zuerst 2FA: [2FA aktivieren](https://myaccount.google.com/security)
+  1. Falls noch nicht geschehen, aktivieren Sie zuerst 2FA: [2FA aktivieren](https://myaccount.google.com/security)
   2. Gehen Sie zu [Google App Passwords](https://myaccount.google.com/apppasswords)
   3. Wählen Sie "Mail" als App
   4. Wählen Sie Ihr Gerät
@@ -139,7 +139,7 @@ This project automates clicking the "Fetch emails now" button in Gmail settings.
 **When you need an App Password:**
 - If you have 2-Factor Authentication (2FA) enabled (applies to all Gmail accounts)
 - Create an App Password:
-  1. First enable 2FA: [Enable 2FA](https://myaccount.google.com/security)
+  1. If not already enabled, first enable 2FA: [Enable 2FA](https://myaccount.google.com/security)
   2. Go to [Google App Passwords](https://myaccount.google.com/apppasswords)
   3. Select "Mail" as the app
   4. Select your device
