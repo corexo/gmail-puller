@@ -35,9 +35,13 @@ if [ ! -f ".env" ]; then
     echo ""
     echo "Please set:"
     echo "  - GMAIL_EMAIL=your.email@gmail.com"
-    echo "  - GMAIL_PASSWORD=your_app_password"
+    echo "  - GMAIL_PASSWORD=your_password"
     echo ""
-    echo "For security, use an App Password instead of your regular password:"
+    echo "Authentication options:"
+    echo "  - Private Gmail accounts: Use your regular Gmail password"
+    echo "  - Google Workspace/2FA accounts: Use an App Password"
+    echo ""
+    echo "To create an App Password (if applicable):"
     echo "  1. Go to https://myaccount.google.com/apppasswords"
     echo "  2. Create a new App Password for 'Mail'"
     echo "  3. Copy the 16-character password"
@@ -60,7 +64,9 @@ fi
 
 if [ -z "$GMAIL_PASSWORD" ] || [ "$GMAIL_PASSWORD" = "your_password_here" ]; then
     echo "⚠️  WARNING: GMAIL_PASSWORD is not configured in .env"
-    echo "Please edit .env and set your Gmail password or App Password"
+    echo "Please edit .env and set your Gmail password"
+    echo "  - Private accounts: Use your regular password"
+    echo "  - Workspace/2FA accounts: Use an App Password"
     exit 1
 fi
 

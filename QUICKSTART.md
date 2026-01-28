@@ -5,6 +5,7 @@
 ### Voraussetzungen
 - Docker & Docker Compose installiert
 - Gmail-Konto mit externen E-Mail-Konten (POP3/IMAP)
+- Gmail-Passwort (oder App-Passwort bei 2FA/Workspace)
 
 ### In 5 Schritten zum Ziel:
 
@@ -14,7 +15,13 @@
    cd gmail-puller
    ```
 
-2. **App-Passwort erstellen**
+2. **Authentifizierung vorbereiten**
+   
+   **Private Gmail-Konten:**
+   - Verwenden Sie Ihr normales Gmail-Passwort
+   - App-Passwörter sind meist nicht verfügbar
+   
+   **Google Workspace oder 2FA-Konten:**
    - Gehe zu: https://myaccount.google.com/apppasswords
    - Erstelle ein App-Passwort für "Mail"
    - Kopiere das 16-stellige Passwort
@@ -24,7 +31,7 @@
    cp .env.example .env
    # Bearbeite .env und trage deine Daten ein:
    # GMAIL_EMAIL=deine.email@gmail.com
-   # GMAIL_PASSWORD=dein_app_passwort
+   # GMAIL_PASSWORD=dein_passwort  # Normales Passwort oder App-Passwort
    ```
 
 4. **Setup-Skript ausführen**
@@ -47,6 +54,7 @@
 ### Prerequisites
 - Docker & Docker Compose installed
 - Gmail account with external email accounts (POP3/IMAP)
+- Gmail password (or App Password for 2FA/Workspace)
 
 ### 5 Steps to Success:
 
@@ -56,7 +64,13 @@
    cd gmail-puller
    ```
 
-2. **Create App Password**
+2. **Prepare Authentication**
+   
+   **Private Gmail accounts:**
+   - Use your regular Gmail password
+   - App Passwords are typically not available
+   
+   **Google Workspace or 2FA accounts:**
    - Go to: https://myaccount.google.com/apppasswords
    - Create an App Password for "Mail"
    - Copy the 16-character password
@@ -66,7 +80,7 @@
    cp .env.example .env
    # Edit .env and enter your credentials:
    # GMAIL_EMAIL=your.email@gmail.com
-   # GMAIL_PASSWORD=your_app_password
+   # GMAIL_PASSWORD=your_password  # Regular password or App Password
    ```
 
 4. **Run setup script**
@@ -106,7 +120,7 @@ Edit `.env` to customize:
 
 ```env
 GMAIL_EMAIL=your.email@gmail.com     # Your Gmail address
-GMAIL_PASSWORD=your_app_password     # Your App Password
+GMAIL_PASSWORD=your_password         # Your password (regular or App Password)
 CHECK_INTERVAL=60                    # Check interval in seconds
 GMAIL_ACCOUNT_INDEX=0               # Account index (if multiple)
 LOG_LEVEL=INFO                      # Logging level
@@ -124,7 +138,8 @@ HEADLESS=true                       # Browser in background
 → Go to: https://mail.google.com/mail/u/0/#settings/accounts
 
 ### Login errors
-→ Use App Password instead of regular password
+→ Use your regular password for private Gmail accounts
+→ Use an App Password for Google Workspace or 2FA accounts
 → Enable 2FA first: https://myaccount.google.com/security
 
 ### Container won't start

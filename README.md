@@ -18,18 +18,24 @@ Dieses Projekt automatisiert das Klicken auf den Button "Jetzt E-Mails abrufen" 
 
 - Docker und Docker Compose installiert
 - Ein Gmail-Konto mit verbundenen externen E-Mail-Konten
-- App-Passwort für Gmail (empfohlen aus Sicherheitsgründen)
+- Gmail-Passwort (für private Konten) oder App-Passwort (für Google Workspace/2FA-Konten)
 
 ### Einrichtung
 
-#### 1. App-Passwort erstellen (empfohlen)
+#### 1. Authentifizierung
 
-Aus Sicherheitsgründen sollten Sie ein App-Passwort verwenden:
+**Für private Gmail-Konten:**
+- Verwenden Sie Ihr normales Gmail-Passwort
+- App-Passwörter sind für private Konten meist nicht verfügbar
 
-1. Gehen Sie zu [Google App Passwords](https://myaccount.google.com/apppasswords)
-2. Wählen Sie "Mail" als App
-3. Wählen Sie Ihr Gerät
-4. Kopieren Sie das generierte 16-stellige Passwort
+**Für Google Workspace oder Konten mit 2FA:**
+- Erstellen Sie ein App-Passwort:
+  1. Gehen Sie zu [Google App Passwords](https://myaccount.google.com/apppasswords)
+  2. Wählen Sie "Mail" als App
+  3. Wählen Sie Ihr Gerät
+  4. Kopieren Sie das generierte 16-stellige Passwort
+
+**Hinweis:** Das Skript speichert die Login-Session, sodass Sie sich nur einmal anmelden müssen.
 
 #### 2. Konfiguration
 
@@ -41,12 +47,12 @@ Aus Sicherheitsgründen sollten Sie ein App-Passwort verwenden:
 2. Bearbeiten Sie die `.env` Datei und tragen Sie Ihre Daten ein:
    ```env
    GMAIL_EMAIL=ihre.email@gmail.com
-   GMAIL_PASSWORD=ihr_app_passwort_hier
-   CHECK_INTERVAL=60          # Prüfintervall in Sekunden (60 = 1 Minute)
-   GMAIL_ACCOUNT_INDEX=0      # Gmail Account Index (Standard: 0)
-   LOG_LEVEL=INFO            # Log-Level
-   TZ=Europe/Berlin          # Zeitzone
-   HEADLESS=true             # Browser im Hintergrund (true/false)
+   GMAIL_PASSWORD=ihr_passwort_hier     # Normales Passwort oder App-Passwort
+   CHECK_INTERVAL=60                    # Prüfintervall in Sekunden (60 = 1 Minute)
+   GMAIL_ACCOUNT_INDEX=0                # Gmail Account Index (Standard: 0)
+   LOG_LEVEL=INFO                       # Log-Level
+   TZ=Europe/Berlin                     # Zeitzone
+   HEADLESS=true                        # Browser im Hintergrund (true/false)
    ```
 
 #### 3. Mit Docker starten
@@ -90,8 +96,9 @@ gmail-puller  | 2024-01-27 12:00:05 - INFO - ✓ Email fetch triggered successfu
 - Der Button erscheint nur, wenn externe Konten verbunden sind
 
 **Problem:** Login-Fehler
-- Lösung: Verwenden Sie ein App-Passwort statt Ihres regulären Passworts
-- Stellen Sie sicher, dass 2FA aktiviert ist, um App-Passwörter zu generieren
+- Lösung: Überprüfen Sie Ihre Zugangsdaten
+- Für private Gmail-Konten: Verwenden Sie Ihr normales Passwort
+- Für Google Workspace/2FA-Konten: Verwenden Sie ein App-Passwort
 
 **Problem:** Container startet nicht
 - Lösung: Prüfen Sie die Logs mit `docker-compose logs`
@@ -100,8 +107,8 @@ gmail-puller  | 2024-01-27 12:00:05 - INFO - ✓ Email fetch triggered successfu
 
 - Das Skript benötigt externe E-Mail-Konten, die in Gmail konfiguriert sind
 - Der Button "Jetzt E-Mails abrufen" wird nur angezeigt, wenn externe Konten verbunden sind
-- Aus Sicherheitsgründen wird die Verwendung eines App-Passworts empfohlen
 - Die Login-Session wird persistent gespeichert, sodass nur einmal eine Anmeldung erforderlich ist
+- Verwenden Sie Ihr normales Gmail-Passwort (für private Konten) oder ein App-Passwort (für Workspace/2FA-Konten)
 
 ---
 
@@ -119,18 +126,24 @@ This project automates clicking the "Fetch emails now" button in Gmail settings.
 
 - Docker and Docker Compose installed
 - A Gmail account with connected external email accounts
-- App Password for Gmail (recommended for security)
+- Gmail password (for private accounts) or App Password (for Google Workspace/2FA accounts)
 
 ### Setup
 
-#### 1. Create App Password (recommended)
+#### 1. Authentication
 
-For security reasons, you should use an App Password:
+**For private Gmail accounts:**
+- Use your regular Gmail password
+- App Passwords are typically not available for private accounts
 
-1. Go to [Google App Passwords](https://myaccount.google.com/apppasswords)
-2. Select "Mail" as the app
-3. Select your device
-4. Copy the generated 16-character password
+**For Google Workspace or accounts with 2FA:**
+- Create an App Password:
+  1. Go to [Google App Passwords](https://myaccount.google.com/apppasswords)
+  2. Select "Mail" as the app
+  3. Select your device
+  4. Copy the generated 16-character password
+
+**Note:** The script stores the login session, so you only need to log in once.
 
 #### 2. Configuration
 
@@ -142,12 +155,12 @@ For security reasons, you should use an App Password:
 2. Edit the `.env` file and enter your credentials:
    ```env
    GMAIL_EMAIL=your.email@gmail.com
-   GMAIL_PASSWORD=your_app_password_here
-   CHECK_INTERVAL=60          # Check interval in seconds (60 = 1 minute)
-   GMAIL_ACCOUNT_INDEX=0      # Gmail account index (default: 0)
-   LOG_LEVEL=INFO            # Log level
-   TZ=Europe/Berlin          # Timezone
-   HEADLESS=true             # Run browser in background (true/false)
+   GMAIL_PASSWORD=your_password_here     # Regular password or App Password
+   CHECK_INTERVAL=60                     # Check interval in seconds (60 = 1 minute)
+   GMAIL_ACCOUNT_INDEX=0                 # Gmail account index (default: 0)
+   LOG_LEVEL=INFO                        # Log level
+   TZ=Europe/Berlin                      # Timezone
+   HEADLESS=true                         # Run browser in background (true/false)
    ```
 
 #### 3. Start with Docker
@@ -191,8 +204,9 @@ gmail-puller  | 2024-01-27 12:00:05 - INFO - ✓ Email fetch triggered successfu
 - The button only appears when external accounts are connected
 
 **Problem:** Login errors
-- Solution: Use an App Password instead of your regular password
-- Make sure 2FA is enabled to generate App Passwords
+- Solution: Check your credentials
+- For private Gmail accounts: Use your regular password
+- For Google Workspace/2FA accounts: Use an App Password
 
 **Problem:** Container won't start
 - Solution: Check the logs with `docker-compose logs`
@@ -201,8 +215,8 @@ gmail-puller  | 2024-01-27 12:00:05 - INFO - ✓ Email fetch triggered successfu
 
 - The script requires external email accounts configured in Gmail
 - The "Fetch emails now" button only appears when external accounts are connected
-- Using an App Password is recommended for security
 - Login session is stored persistently, so you only need to log in once
+- Use your regular Gmail password (for private accounts) or an App Password (for Workspace/2FA accounts)
 
 ---
 
@@ -218,10 +232,10 @@ gmail-puller  | 2024-01-27 12:00:05 - INFO - ✓ Email fetch triggered successfu
 
 ## 🔒 Security
 
-- Uses App Password (no regular password storage)
-- Browser profile stored in Docker volume
-- Credentials only in .env file
+- Browser profile stored in Docker volume for persistent sessions
+- Credentials only in .env file (not committed to repository)
 - `.gitignore` configured to exclude sensitive files
+- Supports both regular passwords and App Passwords
 
 ## 📝 License
 
